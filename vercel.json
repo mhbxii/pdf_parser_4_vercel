@@ -1,9 +1,0 @@
-{
-    "functions": {
-      "api/parse_pdf.js": {
-        "runtime": "nodejs18.x"
-      }
-    }
-  }
-  
-  
