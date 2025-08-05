@@ -1,5 +1,5 @@
 import Busboy from "busboy";
-import pdfjsLib from "pdfjs-dist/legacy/build/pdf.js";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
