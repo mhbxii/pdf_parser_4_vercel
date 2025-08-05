@@ -1,8 +1,10 @@
 {
+    "name": "pdf-parser",
+    "version": "1.0.0",
+    "type": "module",
     "dependencies": {
       "busboy": "^1.6.0",
       "pdfjs-dist": "^3.9.179"
     }
   }
-  
   
