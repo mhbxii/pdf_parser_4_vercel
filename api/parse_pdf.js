@@ -1,10 +1,9 @@
 import Busboy from "busboy";
-import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.js";
+import pdf from "pdf-parse";
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
+  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+
   try {
     const chunks = [];
     const busboy = Busboy({ headers: req.headers });
@@ -30,23 +29,16 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "File too large (max 5MB)" });
     }
 
-    // pdfjs wants Uint8Array
-    const pdfData = new Uint8Array(buffer);
-    const loadingTask = pdfjsLib.getDocument({ data: pdfData });
-    const pdfDoc = await loadingTask.promise;
+    // pdf-parse usage:
+    const data = await pdf(buffer);
 
-    if (pdfDoc.numPages > 5) {
+    // Check pages count limit:
+    if (data.numpages > 5) {
       return res.status(400).json({ error: "PDF exceeds 5 pages" });
     }
 
-    let text = "";
-    for (let i = 1; i <= pdfDoc.numPages; i++) {
-      const page = await pdfDoc.getPage(i);
-      const content = await page.getTextContent();
-      text += content.items.map((item) => item.str).join(" ") + "\n\n";
-    }
-
-    text = text.trim();
+    // Limit extracted text length:
+    let text = data.text.trim();
     if (!text) return res.status(400).json({ error: "No text extracted" });
     if (text.length > 10000) text = text.slice(0, 10000);
 
